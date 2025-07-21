@@ -37,7 +37,7 @@ function App() {
     item,
     qty,
     status: '未対応',
-    tableNumber: tableNumber,
+    table_number: tableNumber,
   })
   if (!error) {
     console.log('追加成功:', item, qty)
@@ -52,17 +52,27 @@ function App() {
 
   // ✅ ここを外に出す！
   const updateStatus = async (id: number, currentStatus: string) => {
-    const statusCycle = ['未対応', '調理中', '配膳済み']
-    const nextIndex = (statusCycle.indexOf(currentStatus) + 1) % statusCycle.length
-    const nextStatus = statusCycle[nextIndex]
+  const statusCycle = ['未対応', '調理中', '配膳済み']
+  const nextIndex = (statusCycle.indexOf(currentStatus) + 1) % statusCycle.length
+  const nextStatus = statusCycle[nextIndex]
 
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: nextStatus })
-      .eq('id', id)
+  console.log('クリックされたID:', id)
+  console.log('現在のstatus:', currentStatus)
+  console.log('次のstatus:', nextStatus)
 
-    if (!error) fetchOrders()
+  const { error } = await supabase
+    .from('orders')
+    .update({ status: nextStatus })
+    .eq('id', id)
+
+  if (!error) {
+    console.log('更新成功')
+    fetchOrders()
+  } else {
+    console.error('ステータス更新失敗:', error)
   }
+}
+
 
   const deleteOrder = async (id: number) => {
     const { error } = await supabase.from('orders').delete().eq('id', id)
