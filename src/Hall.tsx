@@ -9,7 +9,7 @@ type Order = {
   table_number?: string
 }
 
-export default function Hall() {
+function Hall() {
   const [orders, setOrders] = useState<Order[]>([])
   const [item, setItem] = useState('')
   const [qty, setQty] = useState(1)
