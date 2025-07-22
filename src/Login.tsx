@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { supabase } from './lib/supabase'
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js' // ★追加 
 
 export default function Login() {
   const navigate = useNavigate()
@@ -21,12 +22,13 @@ export default function Login() {
     checkSession()
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN') {
-          navigate('/select') // ← ログイン完了後もリダイレクト
-        }
-      }
-    )
+  async (event: AuthChangeEvent, session: Session | null) => {
+    if (event === 'SIGNED_IN') {
+      navigate('/select')
+    }
+  }
+)
+
 
     return () => {
       listener?.subscription.unsubscribe()
