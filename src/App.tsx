@@ -1,14 +1,17 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './Login'
+import Select from './Select'
 import Hall from './Hall'
 import Kitchen from './Kitchen'
 import Counter from './Counter'
 
-export default function App() {
+function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/select" element={<Select />} />
         <Route path="/hall" element={<Hall />} />
         <Route path="/kitchen" element={<Kitchen />} />
         <Route path="/counter" element={<Counter />} />
@@ -16,3 +19,6 @@ export default function App() {
     </Router>
   )
 }
+
+export default App
+// src/App.tsx
