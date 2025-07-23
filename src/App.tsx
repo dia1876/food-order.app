@@ -8,9 +8,7 @@ import './index.css'
 
 function App() {
   return (
-    <div className="bg-red-500 text-white min-h-screen p-4">
-      <p>背景カスタムカラー確認用</p>
-
+    <div className="bg-cafe-light text-cafe-text min-h-screen p-4">
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
