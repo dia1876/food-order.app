@@ -6,10 +6,11 @@ import Kitchen from './Kitchen'
 import Counter from './Counter'
 import './index.css'
 
-
 function App() {
   return (
-    <div className="bg-cafe-light min-h-screen">
+    <div className="bg-red-500 text-white min-h-screen p-4">
+      <p>背景カスタムカラー確認用</p>
+
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -25,3 +26,4 @@ function App() {
 }
 
 export default App
+
