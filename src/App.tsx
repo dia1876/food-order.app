@@ -4,7 +4,7 @@ import Select from './Select'
 import Hall from './Hall'
 import Kitchen from './Kitchen'
 import Counter from './Counter'
-
+import './App.css' // スタイルを適用
 function App() {
   return (
     <Router>
