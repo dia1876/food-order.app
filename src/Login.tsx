@@ -23,10 +23,12 @@ export default function Login() {
 
     const { data: listener } = supabase.auth.onAuthStateChange(
   async (event: AuthChangeEvent, session: Session | null) => {
-    if (event === 'SIGNED_IN') {
-      navigate('/select')
-    }
+  // console.log('New session info:', session)
+  if (event === 'SIGNED_IN') {
+    navigate('/select')
   }
+}
+
 )
 
 
