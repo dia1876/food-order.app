@@ -49,50 +49,61 @@ function Hall() {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>ホール注文フォーム</h1>
+    <div className="max-w-xl mx-auto p-6 bg-white shadow rounded space-y-6">
+      <h1 className="text-2xl font-bold text-center text-cafe-text">ホール注文フォーム</h1>
 
-      <input
-        type="text"
-        placeholder="商品名"
-        value={item}
-        onChange={(e) => setItem(e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="数量"
-        value={qty}
-        min="1"
-        onChange={(e) => setQty(Number(e.target.value))}
-      />
-      <select
-        value={tableNumber}
-        onChange={(e) => setTableNumber(e.target.value)}
-      >
-        <option value="">テーブル選択</option>
-        {[
-          'A', 'B', 'C', 'D', 'E', 'F',
-          '1', '2', '3', '4',
-          '11', '12', '13', '14', '15', '16', '17',
-          '18S', '18N', '18W', '18E',
-        ].map((table) => (
-          <option key={table} value={table}>
-            テーブル {table}
-          </option>
-        ))}
-      </select>
+      <div className="flex flex-wrap gap-2 justify-center">
+        <input
+          type="text"
+          placeholder="商品名"
+          value={item}
+          onChange={(e) => setItem(e.target.value)}
+          className="border px-3 py-2 rounded w-32"
+        />
+        <input
+          type="number"
+          placeholder="数量"
+          value={qty}
+          min="1"
+          onChange={(e) => setQty(Number(e.target.value))}
+          className="border px-3 py-2 rounded w-20"
+        />
+        <select
+          value={tableNumber}
+          onChange={(e) => setTableNumber(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="">テーブル選択</option>
+          {[
+            'A', 'B', 'C', 'D', 'E', 'F',
+            '1', '2', '3', '4',
+            '11', '12', '13', '14', '15', '16', '17',
+            '18S', '18N', '18W', '18E',
+          ].map((table) => (
+            <option key={table} value={table}>
+              テーブル {table}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={addOrder}
+          className="bg-cafe-base hover:bg-cafe-hover text-white font-medium px-4 py-2 rounded"
+        >
+          追加
+        </button>
+      </div>
 
-      <button onClick={addOrder}>追加</button>
-
-      <h2>注文一覧（確認用）</h2>
-      <ul>
-        {orders.map((order) => (
-          <li key={order.id}>
-            <strong>テーブル {order.table_number || '未指定'}</strong>:
-            <strong>{order.item || '[商品名なし]'}</strong> × {order.qty}（{order.status}）
-          </li>
-        ))}
-      </ul>
+      <div>
+        <h2 className="text-xl font-semibold text-center">注文一覧（確認用）</h2>
+        <ul className="mt-4 space-y-2">
+          {orders.map((order) => (
+            <li key={order.id} className="border-b pb-2 text-sm">
+              <span className="font-bold text-cafe-text">テーブル {order.table_number || '未指定'}:</span>{' '}
+              <span className="font-semibold">{order.item || '[商品名なし]'}</span> × {order.qty}（{order.status}）
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

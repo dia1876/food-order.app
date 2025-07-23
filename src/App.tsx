@@ -4,21 +4,24 @@ import Select from './Select'
 import Hall from './Hall'
 import Kitchen from './Kitchen'
 import Counter from './Counter'
-import './App.css' // スタイルを適用
+import './index.css'
+
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/select" element={<Select />} />
-        <Route path="/hall" element={<Hall />} />
-        <Route path="/kitchen" element={<Kitchen />} />
-        <Route path="/counter" element={<Counter />} />
-      </Routes>
-    </Router>
+    <div className="bg-cafe-light min-h-screen">
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/select" element={<Select />} />
+          <Route path="/hall" element={<Hall />} />
+          <Route path="/kitchen" element={<Kitchen />} />
+          <Route path="/counter" element={<Counter />} />
+        </Routes>
+      </Router>
+    </div>
   )
 }
 
 export default App
-// src/App.tsx

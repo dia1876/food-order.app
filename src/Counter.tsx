@@ -61,7 +61,7 @@ export default function Counter() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1>🧑‍💼 カウンター用オーダー一覧</h1>
+      <h1>カウンター用オーダー一覧</h1>
       <ul>
         {orders.map((order) => (
           <li key={order.id} style={{ marginBottom: '1rem' }}>
