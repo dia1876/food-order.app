@@ -8,6 +8,7 @@ module.exports = {
       colors: {
         cafe: {
           light: '#F5E6D3',  // ← ベージュ感が強くなって差が分かる
+          cream: '#F5E6D3',
           base: '#C18E60',
           hover: '#a36f43',
           text: '#5C4033',

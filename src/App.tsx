@@ -8,7 +8,7 @@ import './index.css'
 
 function App() {
   return (
-    <div className="bg-cafe-light text-cafe-text min-h-screen p-4">
+    <div className="min-h-screen bg-cream-50 bg-cafe-pattern">
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
