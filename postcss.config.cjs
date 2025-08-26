@@ -1,9 +1,7 @@
 // postcss.config.cjs
-// postcss.config.cjs
 module.exports = {
   plugins: {
-    tailwindcss: {},   // ← これ！
+    '@tailwindcss/postcss': {},
     autoprefixer: {},
   },
 }
-
