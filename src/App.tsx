@@ -8,7 +8,6 @@ import './index.css'
 
 function App() {
   return (
-    <div className="min-h-screen bg-cream-50 bg-cafe-pattern">
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -19,7 +18,6 @@ function App() {
           <Route path="/counter" element={<Counter />} />
         </Routes>
       </Router>
-    </div>
   )
 }
 

@@ -36,7 +36,11 @@ export default function Hall() {
   const [tableNumber, setTableNumber] = useState('')
 
   const fetchOrders = async () => {
-    const { data, error } = await supabase.from('orders').select('*').order('id', { ascending: false })
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('id', { ascending: false })
+
     if (error) {
       console.error('取得エラー:', error)
       return
@@ -46,33 +50,50 @@ export default function Hall() {
 
   useEffect(() => {
     fetchOrders()
+
+    // リアルタイム購読
+    const ch = supabase
+      .channel('orders-hall')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders)
+      .subscribe()
+    return () => {
+      supabase.removeChannel(ch)
+    }
   }, [])
 
   const addOrder = async () => {
+    console.log('HANDLER start')
     const name = item.trim()
+
     if (!name) {
       alert('商品名を入力してください')
       return
     }
+
+    console.log('SUPABASE insert')
     const { error } = await supabase.from('orders').insert({
       item: name,
       qty,
       status: '未対応',
       table_number: tableNumber || null,
     })
+
     if (error) {
       console.error('追加失敗:', error)
+      alert('追加失敗: ' + error.message)
       return
     }
+
+    console.log('SUCCESS')
     setItem('')
     setQty(1)
     setTableNumber('')
     fetchOrders()
+    alert('追加しました')
   }
 
   return (
     <div className="mx-auto w-full max-w-2xl p-6">
-      {/* Card */}
       <div className="space-y-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
         <h1 className="text-center text-2xl font-extrabold text-cafe-text">ホール注文フォーム</h1>
 
@@ -86,6 +107,7 @@ export default function Hall() {
               placeholder="商品名"
               value={item}
               onChange={(e) => setItem(e.target.value)}
+              required
               className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-cafe-base focus-visible:ring-offset-2"
@@ -99,7 +121,9 @@ export default function Hall() {
               type="number"
               min={1}
               value={qty}
-              onChange={(e) => setQty(Number(e.target.value))}
+              onChange={(e) =>
+                setQty(Number.isFinite(e.target.valueAsNumber) ? e.target.valueAsNumber : 1)
+              }
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-center shadow-sm
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-cafe-base focus-visible:ring-offset-2"
@@ -125,14 +149,16 @@ export default function Hall() {
 
           <div className="flex items-stretch">
             <button
+              type="button"
               onClick={addOrder}
-              className="inline-flex w-full items-center justify-center rounded-md bg-cafe-base px-4 py-2
-                         font-medium text-white shadow transition-colors
-                         hover:bg-cafe-hover
-                         focus-visible:outline-none focus-visible:ring-2
-                         focus-visible:ring-cafe-base focus-visible:ring-offset-2"
-            >
-              追加
+              disabled={!item.trim()}
+                className="inline-flex w-full items-center justify-center rounded-lg 
+             bg-cafe-base px-5 py-3 text-lg font-bold text-white shadow-lg
+             hover:bg-cafe-hover hover:scale-[1.02] active:scale-95
+             focus-visible:outline-none focus-visible:ring-4
+             focus-visible:ring-cafe-base focus-visible:ring-offset-2
+             disabled:opacity-50 disabled:cursor-not-allowed"
+>＋ 追加
             </button>
           </div>
         </div>
@@ -146,13 +172,18 @@ export default function Hall() {
           ) : (
             <ul className="mt-4 divide-y divide-gray-200">
               {orders.map((o) => (
-                <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 py-2 text-sm">
+                <li
+                  key={o.id}
+                  className="flex flex-wrap items-center justify-between gap-3 py-2 text-sm"
+                >
                   <div className="min-w-0">
                     <span className="font-bold text-cafe-text">テーブル {o.table_number || '未指定'}：</span>{' '}
                     <span className="font-semibold">{o.item || '[商品名なし]'}</span>{' '}
                     × {o.qty}
                   </div>
-                  <span className={`inline-flex shrink-0 items-center rounded px-2 py-0.5 text-xs font-medium ${badgeClass(o.status)}`}>
+                  <span
+                    className={`inline-flex shrink-0 items-center rounded px-2 py-0.5 text-xs font-medium ${badgeClass(o.status)}`}
+                  >
                     {o.status}
                   </span>
                 </li>
@@ -164,6 +195,7 @@ export default function Hall() {
     </div>
   )
 }
+
 
 
 
