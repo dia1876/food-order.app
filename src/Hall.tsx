@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
+import { menuItems } from './utils/menuItems' // ★ 追加
 
 type Order = {
   id: number
@@ -31,7 +32,7 @@ function badgeClass(status: Order['status']) {
 
 export default function Hall() {
   const [orders, setOrders] = useState<Order[]>([])
-  const [item, setItem] = useState('')
+  const [item, setItem] = useState('')         // ← 選択したメニュー名が入る
   const [qty, setQty] = useState(1)
   const [tableNumber, setTableNumber] = useState('')
 
@@ -50,46 +51,34 @@ export default function Hall() {
 
   useEffect(() => {
     fetchOrders()
-
-    // リアルタイム購読
     const ch = supabase
       .channel('orders-hall')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders)
       .subscribe()
-    return () => {
-      supabase.removeChannel(ch)
-    }
+    return () => { supabase.removeChannel(ch) }
   }, [])
 
   const addOrder = async () => {
-    console.log('HANDLER start')
     const name = item.trim()
-
     if (!name) {
-      alert('商品名を入力してください')
+      alert('商品を選択してください')
       return
     }
-
-    console.log('SUPABASE insert')
     const { error } = await supabase.from('orders').insert({
       item: name,
       qty,
       status: '未対応',
       table_number: tableNumber || null,
     })
-
     if (error) {
       console.error('追加失敗:', error)
       alert('追加失敗: ' + error.message)
       return
     }
-
-    console.log('SUCCESS')
     setItem('')
     setQty(1)
     setTableNumber('')
     fetchOrders()
-    alert('追加しました')
   }
 
   return (
@@ -99,21 +88,25 @@ export default function Hall() {
 
         {/* フォーム */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
+          {/* 商品：menuItems から選択 */}
           <div className="flex flex-col">
-            <label htmlFor="item" className="sr-only">商品名</label>
-            <input
+            <label htmlFor="item" className="sr-only">商品</label>
+            <select
               id="item"
-              type="text"
-              placeholder="商品名"
               value={item}
               onChange={(e) => setItem(e.target.value)}
-              required
               className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-cafe-base focus-visible:ring-offset-2"
-            />
+            >
+              <option value="">商品を選択</option>
+              {menuItems.map((m) => (
+                <option key={m.id} value={m.name}>{m.name}</option>
+              ))}
+            </select>
           </div>
 
+          {/* 数量 */}
           <div className="flex flex-col">
             <label htmlFor="qty" className="sr-only">数量</label>
             <input
@@ -130,6 +123,7 @@ export default function Hall() {
             />
           </div>
 
+          {/* テーブル */}
           <div className="flex flex-col">
             <label htmlFor="table" className="sr-only">テーブル</label>
             <select
@@ -147,18 +141,20 @@ export default function Hall() {
             </select>
           </div>
 
+          {/* 追加ボタン */}
           <div className="flex items-stretch">
             <button
               type="button"
               onClick={addOrder}
               disabled={!item.trim()}
-                className="inline-flex w-full items-center justify-center rounded-lg 
-             bg-cafe-base px-5 py-3 text-lg font-bold text-white shadow-lg
-             hover:bg-cafe-hover hover:scale-[1.02] active:scale-95
-             focus-visible:outline-none focus-visible:ring-4
-             focus-visible:ring-cafe-base focus-visible:ring-offset-2
-             disabled:opacity-50 disabled:cursor-not-allowed"
->＋ 追加
+              className="inline-flex w-full items-center justify-center rounded-lg 
+                         bg-cafe-base px-5 py-3 text-lg font-bold text-white shadow-lg
+                         hover:bg-cafe-hover hover:scale-[1.02] active:scale-95
+                         focus-visible:outline-none focus-visible:ring-4
+                         focus-visible:ring-cafe-base focus-visible:ring-offset-2
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ＋ 追加
             </button>
           </div>
         </div>
@@ -166,24 +162,18 @@ export default function Hall() {
         {/* 注文一覧 */}
         <div>
           <h2 className="text-center text-xl font-semibold">注文一覧（確認用）</h2>
-
           {orders.length === 0 ? (
             <p className="mt-4 text-center text-sm text-gray-500">まだ注文はありません。</p>
           ) : (
             <ul className="mt-4 divide-y divide-gray-200">
               {orders.map((o) => (
-                <li
-                  key={o.id}
-                  className="flex flex-wrap items-center justify-between gap-3 py-2 text-sm"
-                >
+                <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 py-2 text-sm">
                   <div className="min-w-0">
                     <span className="font-bold text-cafe-text">テーブル {o.table_number || '未指定'}：</span>{' '}
                     <span className="font-semibold">{o.item || '[商品名なし]'}</span>{' '}
                     × {o.qty}
                   </div>
-                  <span
-                    className={`inline-flex shrink-0 items-center rounded px-2 py-0.5 text-xs font-medium ${badgeClass(o.status)}`}
-                  >
+                  <span className={`inline-flex shrink-0 items-center rounded px-2 py-0.5 text-xs font-medium ${badgeClass(o.status)}`}>
                     {o.status}
                   </span>
                 </li>
@@ -195,6 +185,7 @@ export default function Hall() {
     </div>
   )
 }
+
 
 
 
