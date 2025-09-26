@@ -21,12 +21,14 @@ export default function Select() {
           { label: 'カウンター', value: 'counter' },
         ].map(({ label, value }) => (
           <button
-            key={value}
-            onClick={() => handleSelect(value)}
-            className="w-full bg-cafe-base hover:bg-cafe-hover text-white font-semibold py-3 px-6 rounded-lg shadow transition duration-200 tracking-wide"
-          >
-            {label}
-          </button>
+  key={value}
+  onClick={() => handleSelect(value)}
+  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold
+             py-3 px-6 rounded-lg shadow-lg transition-transform duration-200
+             hover:scale-[1.02] active:scale-95"
+>
+  {label}
+</button>
         ))}
       </div>
     </div>
