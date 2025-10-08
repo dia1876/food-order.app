@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
-import { menuItems } from './utils/menuItems' // ★ 追加
+import { menuItems } from './utils/menuItems'
 
 type Order = {
   id: number
   item: string
   qty: number
   status: '未対応' | '調理中' | '配膳済み'
-  table_number?: string
+  table_number?: string | null
 }
 
 const TABLES = [
@@ -19,29 +19,25 @@ const TABLES = [
 
 function badgeClass(status: Order['status']) {
   switch (status) {
-    case '未対応':
-      return 'bg-red-100 text-red-700 ring-1 ring-red-200'
-    case '調理中':
-      return 'bg-amber-100 text-amber-700 ring-1 ring-amber-200'
-    case '配膳済み':
-      return 'bg-green-100 text-green-700 ring-1 ring-green-200'
-    default:
-      return 'bg-gray-100 text-gray-700 ring-1 ring-gray-200'
+    case '未対応': return 'bg-red-100 text-red-700 ring-1 ring-red-200'
+    case '調理中': return 'bg-amber-100 text-amber-700 ring-1 ring-amber-200'
+    case '配膳済み': return 'bg-green-100 text-green-700 ring-1 ring-green-200'
+    default: return 'bg-gray-100 text-gray-700 ring-1 ring-gray-200'
   }
 }
 
 export default function Hall() {
   const [orders, setOrders] = useState<Order[]>([])
-  const [item, setItem] = useState('')         // ← 選択したメニュー名が入る
+  const [item, setItem] = useState('')
   const [qty, setQty] = useState(1)
   const [tableNumber, setTableNumber] = useState('')
+  const [adding, setAdding] = useState(false)
 
   const fetchOrders = async () => {
     const { data, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('id,item,qty,status,table_number')
       .order('id', { ascending: false })
-
     if (error) {
       console.error('取得エラー:', error)
       return
@@ -53,32 +49,45 @@ export default function Hall() {
     fetchOrders()
     const ch = supabase
       .channel('orders-hall')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchOrders)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+        const row = payload.new as Order
+        setOrders((prev) => [row, ...prev])
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+        const row = payload.new as Order
+        setOrders((prev) => prev.map(o => o.id === row.id ? row : o))
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' }, (payload) => {
+        const row = payload.old as Order
+        setOrders((prev) => prev.filter(o => o.id !== row.id))
+      })
       .subscribe()
     return () => { supabase.removeChannel(ch) }
   }, [])
 
   const addOrder = async () => {
     const name = item.trim()
-    if (!name) {
-      alert('商品を選択してください')
-      return
-    }
-    const { error } = await supabase.from('orders').insert({
-      item: name,
-      qty,
-      status: '未対応',
-      table_number: tableNumber || null,
-    })
+    const q = Number.isFinite(qty) && qty > 0 ? qty : 1
+    if (!name) return alert('商品を選択してください')
+
+    setAdding(true)
+    const { error, data } = await supabase
+      .from('orders')
+      .insert({ item: name, qty: q, status: '未対応', table_number: tableNumber || null })
+      .select('id,item,qty,status,table_number')
+      .single()
+    setAdding(false)
+
     if (error) {
       console.error('追加失敗:', error)
-      alert('追加失敗: ' + error.message)
-      return
+      return alert('追加失敗: ' + error.message)
     }
+
+    if (data) setOrders((prev) => [data as Order, ...prev])
+
     setItem('')
     setQty(1)
     setTableNumber('')
-    fetchOrders()
   }
 
   return (
@@ -88,14 +97,14 @@ export default function Hall() {
 
         {/* フォーム */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
-          {/* 商品：menuItems から選択 */}
+          {/* 商品 */}
           <div className="flex flex-col">
             <label htmlFor="item" className="sr-only">商品</label>
             <select
               id="item"
               value={item}
               onChange={(e) => setItem(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm
+              className="w-full rounded-md border border-gray-300 bg-white text-gray-800 px-3 py-2 shadow-sm
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-cafe-base focus-visible:ring-offset-2"
             >
@@ -114,10 +123,8 @@ export default function Hall() {
               type="number"
               min={1}
               value={qty}
-              onChange={(e) =>
-                setQty(Number.isFinite(e.target.valueAsNumber) ? e.target.valueAsNumber : 1)
-              }
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-center shadow-sm
+              onChange={(e) => setQty(Number.isFinite(e.target.valueAsNumber) && e.target.valueAsNumber > 0 ? e.target.valueAsNumber : 1)}
+              className="w-full rounded-md border border-gray-300 bg-white text-gray-800 px-3 py-2 text-center shadow-sm
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-cafe-base focus-visible:ring-offset-2"
             />
@@ -130,7 +137,7 @@ export default function Hall() {
               id="table"
               value={tableNumber}
               onChange={(e) => setTableNumber(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm
+              className="w-full rounded-md border border-gray-300 bg-white text-gray-800 px-3 py-2 shadow-sm
                          focus-visible:outline-none focus-visible:ring-2
                          focus-visible:ring-cafe-base focus-visible:ring-offset-2"
             >
@@ -146,15 +153,17 @@ export default function Hall() {
             <button
               type="button"
               onClick={addOrder}
-              disabled={!item.trim()}
-              className="inline-flex w-full items-center justify-center rounded-lg 
-                         bg-cafe-base px-5 py-3 text-lg font-bold text-white shadow-lg
-                         hover:bg-cafe-hover hover:scale-[1.02] active:scale-95
-                         focus-visible:outline-none focus-visible:ring-4
-                         focus-visible:ring-cafe-base focus-visible:ring-offset-2
-                         disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!item.trim() || adding}
+              className={`inline-flex w-full items-center justify-center rounded-lg 
+                          px-5 py-3 text-lg font-bold shadow-lg transition-all duration-200
+                          ${adding || !item.trim()
+                            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                            : 'bg-cafe-base text-white hover:bg-cafe-hover hover:scale-[1.02] active:scale-95'
+                          }
+                          focus-visible:outline-none focus-visible:ring-4
+                          focus-visible:ring-cafe-base focus-visible:ring-offset-2`}
             >
-              ＋ 追加
+              {adding ? '追加中…' : '+ 追加'}
             </button>
           </div>
         </div>
@@ -185,6 +194,9 @@ export default function Hall() {
     </div>
   )
 }
+
+
+
 
 
 
