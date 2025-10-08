@@ -1,5 +1,4 @@
 // src/utils/menuItems.ts
-// src/utils/menuItems.ts
 
 export type MenuItem = {
   id: string
