@@ -53,6 +53,9 @@ export const menuItems: MenuItem[] = [
   { id: 'hamburg', name: '煮込みハンバーグ（セット）', price: 1950, category: 'フード', destinations: { kitchen: true, counter: false } },
 
   // 🍽 セット
+  { id: 'morning-a', name: 'モーニングAセット（トースト薄い目 ミニサラダ コーヒー or ティー）', price: 630, category: 'セット', destinations: { kitchen: true, counter: true } },
+  { id: 'morning-b', name: 'モーニングBセット（スコーン or トースト＋コーヒー or ティー）', price: 630, category: 'セット', destinations: { kitchen: true, counter: true } },
+  { id: 'morning-c', name: 'モーニングCセット（スコーン or トースト＋サラダ＋コーヒー or ティー）', price: 730, category: 'セット', destinations: { kitchen: true, counter: true } },
   { id: 'tea-set-scone', name: 'ティーセット（スコーン＋コーヒー or ティー or ハーブ）', price: 1000, category: 'セット', destinations: { kitchen: true, counter: true } },
   { id: 'tea-set-cake', name: 'ティーセット（ケーキ＋コーヒー or ティー or ハーブ）', price: 1050, category: 'セット', destinations: { kitchen: true, counter: true } },
 ]

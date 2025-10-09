@@ -224,17 +224,26 @@ export default function Hall() {
           )}
         </div>
 
-        {/* 確定ボタン */}
-        <button
-          onClick={submitCart}
-          disabled={adding || cart.length === 0 || !tableNumber}
-          className={`w-full rounded-lg px-5 py-3 text-lg font-bold shadow-lg transition
-            ${adding || cart.length === 0 || !tableNumber
-              ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-              : 'bg-cafe-base text-white hover:bg-cafe-hover'}`}
-        >
-          {adding ? '送信中…' : 'オーダー確定'}
-        </button>
+{/* 下部の確定ボックス（Hall.tsx のオーダー確定部） */}
+<div className="sticky bottom-0 left-0 right-0 mt-3 bg-white/90 backdrop-blur px-3 py-3">
+  <button
+    type="button"
+    onClick={submitCart}
+    disabled={adding || cart.length === 0 || !tableNumber}
+    className={`w-full rounded-xl px-5 py-3 text-lg font-bold shadow transition
+      focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cafe-base focus-visible:ring-offset-2
+      ${
+        adding || cart.length === 0 || !tableNumber
+          ? '!bg-white !text-gray-900 !border !border-gray-300 cursor-not-allowed'
+          : '!bg-cafe-base !text-white !border !border-transparent hover:!bg-cafe-hover active:scale-[0.98]'
+      }`}
+  >
+    {adding ? '送信中…' : '+ オーダー確定'}
+  </button>
+</div>
+
+
+
 
         {/* 送信済み一覧（確認用） */}
         <div>

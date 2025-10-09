@@ -4,10 +4,17 @@ import { useNavigate } from 'react-router-dom'
 export default function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false) // ← ボタン無効化フラグ
+  const isDisabled = loading // 必要なら条件を足してOK（例: !email など）
 
-  const handleDummyLogin = () => {
-    // 認証なしでそのまま遷移
-    navigate('/select')
+  const handleDummyLogin = async () => {
+    try {
+      setLoading(true)
+      // ダミー: そのまま遷移
+      navigate('/select')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -31,14 +38,17 @@ export default function Login() {
         <button
           type="button"
           onClick={handleDummyLogin}
-          className="inline-flex w-full items-center justify-center rounded-lg
-                     bg-cafe-base px-5 py-3 text-white text-lg font-bold shadow-lg
-                     hover:bg-cafe-hover hover:scale-[1.01] active:scale-95
-                     focus-visible:outline-none focus-visible:ring-4
-                     focus-visible:ring-cafe-base focus-visible:ring-offset-2
-                     transition-all duration-200"
+          disabled={isDisabled}
+          className={`w-full rounded-lg px-4 py-3 font-bold shadow transition
+            focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cafe-base focus-visible:ring-offset-2
+            ${isDisabled
+              // 無効時は白地＋濃い文字（opacityは使わない）
+              ? 'bg-white text-gray-900 border border-gray-300 cursor-not-allowed'
+              // 有効時はカフェ色＋白文字
+              : 'bg-cafe-base text-white border border-transparent hover:bg-cafe-hover active:scale-[0.98]'
+            }`}
         >
-          ログインせずに進む
+          {isDisabled ? '処理中…' : 'ゲストログイン'}
         </button>
       </div>
     </div>
