@@ -1,69 +1,53 @@
-# React + TypeScript + Vite
+# Food Order App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+飲食店向けの簡易オーダー管理アプリです。  
+店舗業務の効率化を目的として、React + TypeScript を用いて個人開発しました。
 
-Currently, two official plugins are available:
+## 概要
+- 飲食店での注文受付を想定したWebアプリ
+- 実運用を意識したUI設計とデータ管理
+- フロントエンドからバックエンド連携まで一通り実装
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 開発背景
+アルバイト先の飲食店で、
+- 注文管理がアナログ
+- 現場オペレーションの負荷が高い
 
-## Expanding the ESLint configuration
+と感じる場面が多く、  
+「自分で仕組みを作れば改善できるのでは」と考え、個人開発しました。
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 使用技術
+### フロントエンド
+- React
+- TypeScript
+- Vite
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### バックエンド / BaaS
+- Supabase（データ管理・認証）
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### インフラ
+- Netlify（デプロイ）
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### その他
+- Git / GitHub
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 機能概要
+- 注文データの登録・管理
+- 状態管理を用いたリアルタイムUI更新
+- フロントエンドとバックエンドのデータ連携
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 工夫した点
+- コンポーネント分割を意識した設計
+- TypeScriptによる型安全性の確保
+- 実際の店舗利用を想定した画面構成
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 苦労した点
+- 開発途中でReactのバージョン違いによるエラーが発生
+- エラーメッセージ・公式ドキュメント・Issueを調査し、
+  原因を特定して解決
+
+## 今後の改善点
+- Pythonを用いたデータ分析機能の追加  
+  - 注文データの集計・可視化  
+  - 売上や人気メニューの分析  
+- 分析結果を活用した、より実用的なオーダー管理機能への拡張
