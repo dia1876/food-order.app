@@ -13,10 +13,6 @@ type Order = {
 }
 
 const STATUS_FLOW: Order['status'][] = ['未対応', '調理中', '配膳済み']
-const nextStatus = (s: Order['status']) => {
-  const i = STATUS_FLOW.indexOf(s)
-  return STATUS_FLOW[i + 1] ?? null
-}
 const prevStatus = (s: Order['status']) => {
   const i = STATUS_FLOW.indexOf(s)
   return STATUS_FLOW[i - 1] ?? null
